@@ -139,40 +139,42 @@ async def generate_chat_response(message,checkpoint_id):
 
     async for event in events:
         event_name=event["event"]
-
-        if event=="on_chat_model_stream":
+        # print(event_name)
+        if event_name=="on_chat_model_stream":
+            # print()
             chunk_content=serialise_ai_message_chunk(event["data"]["chunk"])
-
+            print(chunk_content)
             safe_content= chunk_content.replace("'", "\\'").replace("\n", "\\n")
             
             yield f"data: {{\"type\": \"content\", \"content\": \"{safe_content}\"}}\n\n"
 
-        elif event_name=="on_Chat_model_end":
-
+        elif event_name=="on_chat_model_end":
+            print(event_name)
             tool_calls=event["data"]["output"].tool_calls if hasattr(event["data"]["output"],"tool_calls") else []
-
-            search_calls=[call for call in tool_calls if ["name"]=="tavily_search_results_json"]
-
+            print(tool_calls)
+            search_calls=[call for call in tool_calls if call["name"]=="tavily_search_results_json"]
             if search_calls:
                 search_query = search_calls[0]["args"].get("query", "")
                 safe_query = search_query.replace('"', '\\"').replace("'", "\\'").replace("\n", "\\n")
+                print(safe_query)
                 yield f"data: {{\"type\": \"search_start\", \"query\": \"{safe_query}\"}}\n\n"
+        
         elif event_name == "on_tool_end" and event["name"] == "tavily_search_results_json":
             # Search completed - send results or error
             output = event["data"]["output"]
-            
             # Check if output is a list 
             if isinstance(output, list):
                 # Extract URLs from list of search results
+                # print(output)
                 urls = []
                 for item in output:
                     if isinstance(item, dict) and "url" in item:
                         urls.append(item["url"])
-                
+                # print(urls)
                 # Convert URLs to JSON and yield them
                 urls_json = json.dumps(urls)
                 yield f"data: {{\"type\": \"search_results\", \"urls\": {urls_json}}}\n\n"
-        yield f"data: {{\"type\": \"end\"}}\n\n"
+    yield f"data: {{\"type\": \"end\"}}\n\n"
 
 
 
