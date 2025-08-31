@@ -1,0 +1,41 @@
+# Python virtual environments
+venv/
+myvenv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Database files
+*.sqlite3
+*.db
+
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
+
+# Node modules (if any)
+node_modules/
