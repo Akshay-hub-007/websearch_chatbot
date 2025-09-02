@@ -135,7 +135,11 @@ async def generate_chat_response(message,checkpoint_id):
                 "thread_id":checkpoint_id
             }
         }
-
+        events = graph.astream_events(
+            {"messages": [HumanMessage(content=message)]},
+            version="v2",
+            config=config
+        )
 
     async for event in events:
         event_name=event["event"]
